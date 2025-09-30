@@ -1,0 +1,79 @@
+﻿@model IEnumerable<Libreria.Application.DTOs.OrdenDetalleDTO>
+
+<div id="myCard">
+    <div class="card">
+        <div class="card-header">
+            Detalle
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-bordered text-center" id="detalleFactura">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.IdLibro)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.NombreLibro)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Cantidad)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Precio)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Subtotal)
+                            </th>
+                            <th></th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model != null)
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td align="center">
+                                            @Html.DisplayFor(modelItem => item.IdLibro)
+                                        </td>
+                                        <td align="left">
+                                            @Html.DisplayFor(modelItem => item.NombreLibro)
+                                        </td>
+                                        <td align="right">
+                                            @Html.DisplayFor(modelItem => item.Cantidad)
+                                        </td>
+                                        <td align="right">
+                                            @Html.DisplayFor(modelItem => item.Precio)
+                                        </td>
+                                        <td align="right">
+                                            @Html.DisplayFor(modelItem => item.Subtotal)
+                                        </td>
+                                        <td align="right">
+                                            <button type="button" class="btn btn-danger" onclick="deleteLibro(@item.IdLibro)">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                }
+                            <!-- Mostrar total-->
+                            <tr>
+                                <td colspan="4" align="right">Total </td>
+                                <td  align="right">
+                                    
+                                    @{
+                                        if (Model != null)
+                                            @Model.Sum(p => p.Subtotal).ToString("###,###.00");
+                                    }
+                                       
+                                </td>
+                                <td align="right">
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

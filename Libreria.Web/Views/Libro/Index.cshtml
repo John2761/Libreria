@@ -1,0 +1,58 @@
+﻿@model IEnumerable<Libreria.Application.DTOs.LibroDTO>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Catalogo de Libros</h1>
+
+<section class="row">
+    <div class="col-2">
+        <ul class="list-group" style="background-color:white">
+            <li class="list-group-item">
+                <button type="button" class="btn btn-info" onclick="buscarxCategoria(0)">Todos</button>
+            </li>
+            @foreach (var item in (List<Libreria.Application.DTOs.CategoriaDTO>)ViewBag.ListCategorias){
+                <li class="list-group-item">
+                    <button type="button" class="btn btn-info" onclick="buscarxCategoria(@item.IdCategoria)">@item.Nombre</button>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="col-10">
+        <div id="listaLibros"  class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+            @await Html.PartialAsync("_ListLibros",Model)
+        </div>
+    </div>
+</section>
+
+@section Scripts{
+    <script type="text/javascript">
+        function buscarxCategoria(IdCategoria){
+            const valIdCategoria=IdCategoria
+            const divLista=document.getElementById("listaLibros")
+            //Solicitud al controlador
+            const myRequest='@Url.Action("buscarxCategoria", "Libro")'
+            //Opciones de la solicitud o Método HTTP
+            const options={
+                method:'GET'
+            }
+            fetch(myRequest+"?IdCategoria="+valIdCategoria,options)
+            .then(function(response){
+                if(!response.ok){
+                    return response.text().then(text=>{throw new Error(text)})
+                }
+                return response.text()
+            })
+            .then((text)=>{
+                divLista.innerHTML=text
+            }).catch(Error=>{
+                Swal.fire({
+                    title:"Error",
+                    text: error,
+                    icon: "error"
+                })
+            })
+        }
+    </script>
+}

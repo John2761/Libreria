@@ -1,0 +1,108 @@
+﻿@model Libreria.Application.DTOs.LibroDTO
+
+@{
+    ViewData["Title"] = "Editar";
+}
+
+<h1>Editar</h1>
+
+<h4>Libro</h4>
+<hr />
+<div>
+
+    <form asp-action="Edit" asp-antiforgery="true" class="row">
+        <div class="col-md-4 ">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group row g-3">
+                <label asp-for="IdLibro" class="form-label mt-4"></label>
+                <input asp-for="IdLibro" class="form-control" readonly />
+                <span asp-validation-for="IdLibro" class="text-danger"></span>
+            </div>
+            <div class="form-group row g-3">
+                <label asp-for="Isbn" class="form-label mt-4"></label>
+                <input asp-for="Isbn" class="form-control" />
+                <span asp-validation-for="Isbn" class="text-danger"></span>
+            </div>
+            <div class="form-group row g-3">
+                <label asp-for="IdAutor" class="form-label mt-4"></label>
+                @* <input asp-for="IdAutor" class="form-control" /> *@
+                @Html.DropDownListFor(m => m.IdAutor,
+                         new SelectList(ViewBag.ListAutor, "IdAutor", "Nombre"), new { @class = "form-select" })
+                <span asp-validation-for="IdAutor" class="text-danger"></span>
+            </div>
+            <div class="form-group row g-3">
+                <label asp-for="Nombre" class="form-label mt-4"></label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group row g-3">
+                <label asp-for="Precio" class="form-label mt-4"></label>
+                <input asp-for="Precio" class="form-control" />
+                <span asp-validation-for="Precio" class="text-danger"></span>
+            </div>
+            <div class="form-group row g-3">
+                <label asp-for="Cantidad" class="form-label mt-4"></label>
+                <input asp-for="Cantidad" class="form-control" />
+                <span asp-validation-for="Cantidad" class="text-danger"></span>
+
+            </div>
+        </div>
+        <div class="col-md-4 offset-md-1">
+            <div class="form-group row g-3">
+                <div class="col">
+                    <label asp-for="IdCategoria" class="form-label mt-4"></label>
+                </div>
+
+                <div class="col">
+                    <select id="selectedCategorias" name="selectedCategorias" class="form-control" asp-items="ViewBag.ListCategorias" multiple></select>
+                </div>
+
+            </div>
+            <div class="form-group row g-3">
+                <label asp-for="Imagen" class="form-label mt-4"></label>
+                <input type="hidden" class="form-control" asp-for="Imagen" />
+                <img style="max-height:460px;"
+                     role="img"
+                     src="data:image/jpeg;charset=utf-8;base64,@Convert.ToBase64String(Model.Imagen)"
+                     alt="Imagen" />
+                <span asp-validation-for="Imagen" class="text-danger"></span>
+            </div>
+
+            <div class="form-group row mt-3">
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <a type="button" class="btn btn-dark" asp-action="IndexAdmin">Regresar al listado</a>
+                    <input type="submit" value="Guardar" class="btn btn-primary" />
+
+                </div>
+
+            </div>
+        </div>
+        </form>
+    
+   
+</div>
+
+<div class="mb-3">
+    
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $('#selectedCategorias').multiselect({
+                buttonClass: 'form-select',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                },
+                includeSelectAllOption: true,
+                selectAllText: 'Seleccionar todas',
+                allSelectedText: 'Todas la opciones',
+                nonSelectedText: 'Seleccione una opción',
+                nSelectedText: ' - seleccionadas',
+            });
+        });
+    </script>
+}

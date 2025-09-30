@@ -1,0 +1,61 @@
+﻿<nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="@Url.Action("Index","Home")">Libreria</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+        aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+            <ul class="navbar-nav flex-grow-1">
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="" asp-controller="Libro" asp-action="Index">Libros</a>
+                </li>               
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-wrench"></i> Mantenimientos
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" asp-controller="Autor" asp-action="Index">Autores</a></li>
+                        @if (User.IsInRole("Admnistrador") == true || User.IsInRole("Empleado")==true)
+                        {
+                            <li><a class="dropdown-item" asp-controller="Libro" asp-action="IndexAdmin">Libros</a></li>
+                        }
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fs-4 bi-gear-fill"></i> Proceso
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a asp-controller="Orden" asp-action="Index" class="dropdown-item"> Ordenes </a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fs-4 bi-people"></i> Seguridad
+                    </a>
+                    @if (User.IsInRole("Admnistrador") == true)
+                    {
+                        <ul class="dropdown-menu">
+                            <li><a href="@Url.Action("Index", "Usuario")" class="dropdown-item"> Usuario </a></li>
+                        </ul>
+                    }
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img class="rounded-circle mx-2 mt-1" src="~/images/profile.png" alt=@User.Identity!.Name width="32px" height="32px" />
+
+                        <span class="d-none d-sm-inline mx-1">@User.Identity!.Name</span>
+
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" asp-area="" asp-controller="Login" asp-action="LogOff">Salir</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

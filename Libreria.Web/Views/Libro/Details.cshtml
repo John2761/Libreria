@@ -1,0 +1,41 @@
+﻿@model Libreria.Application.DTOs.LibroDTO
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Detalle</h1>
+
+<div>
+    <h4>Libro</h4>
+    <hr />
+    <div class="card flex-row text-right" style="width:60%; margin:0 auto;">
+        <img style="max-height:460px;"
+             role="img"
+             src="data:image/jpeg;charset=utf-8;base64,@Convert.ToBase64String(Model.Imagen)"
+             alt="Imagen" />
+        <div class="card-body">
+            <h5 class="card-title">@Html.DisplayFor(model => model.Nombre)</h5>
+            <p class="card-text"><b>@Html.DisplayNameFor(model => model.Isbn):</b>  @Html.DisplayFor(model => model.Isbn)</p>
+            <p class="card-text"><b>@Html.DisplayNameFor(model => model.Precio):</b>  &cent; @Html.DisplayFor(model => model.Precio)</p>
+            <p class="card-text"><b>@Html.DisplayNameFor(model => model.Cantidad):</b>  @Html.DisplayFor(model => model.Cantidad)</p>
+            <p class="card-text"><b>@Html.DisplayNameFor(model => model.IdAutorNavigation):</b>  @Html.DisplayFor(model => model.IdAutorNavigation.Nombre)</p>
+            <div class="mb-1 text-muted">
+                <b>@Html.DisplayNameFor(model => model.IdCategoria):</b>
+                <ul>
+                    @foreach (var c in Model.IdCategoria)
+                    {
+                        <li>@c.Nombre</li>
+                    }
+                </ul>
+            </div>
+
+        </div>
+        <div class="d-flex align-items-end">
+            <a class="btn btn-primary" asp-action="Index">Regresar al listado</a>
+        </div>
+    </div>
+
+</div>
+<div>
+</div>

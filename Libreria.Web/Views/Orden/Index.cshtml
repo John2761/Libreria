@@ -1,0 +1,55 @@
+﻿@model IEnumerable<Libreria.Application.DTOs.OrdenDTO>
+
+@{
+    ViewData["Title"] = "Ordenes";
+}
+
+<h1>Ordenes</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Nueva Orden</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdOrden)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaOrden)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdClienteNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Total)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdOrden)
+                </td>
+                <td>
+                    @item.FechaOrden.ToString("dd-MM-yyyy")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdClienteNavigation.Nombre) @Html.DisplayFor(modelItem => item.IdClienteNavigation.Apellido1) @Html.DisplayFor(modelItem => item.IdClienteNavigation.Apellido2)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Total)
+                </td>
+                <td>
+                    <a asp-action="Details"
+                       asp-route-id="@item.IdOrden"
+                       class="btn btn-info">Detalle</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

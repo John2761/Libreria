@@ -1,0 +1,355 @@
+﻿@using System.Text.Json
+@using Libreria.Application.DTOs
+@model Libreria.Application.DTOs.OrdenDTO
+@{
+    ViewData["Title"] = "Orden";
+}
+
+<style>
+    ul.ui-autocomplete {
+        z-index: 1100;
+    }
+</style>
+
+<form asp-action="Create" id="myForm"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-begin="onBegin"
+      data-ajax-failure="onFailure"
+      data-ajax-success="onSuccess"
+      data-ajax-complete="onComplete">
+    <div class="card">
+        <div class="card-header">
+           <div class="col">
+                <button class="btn btn-info" style="margin-left: 1em" onclick="onClearForm()">Nueva Orden</button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-2">
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="IdOrden" class="control-label fw-normal"></label>
+                            <input asp-for="IdOrden" class="form-control form-control-sm" value="@ViewBag.CurrentReceipt" readonly />
+                            <span asp-validation-for="IdOrden" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="FechaOrden" class="control-label fw-normal"></label>
+                            <input asp-for="FechaOrden" type="text" class="form-control form-control-sm" value="@DateTime.Today.ToString("dd-MM-yyyy")" readonly />
+                            <span asp-validation-for="FechaOrden" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="IdCliente" class="control-label"></label>
+                            <input asp-for="IdCliente" class="form-control form-control-sm" />
+                            <span asp-validation-for="IdCliente" class="text-danger"></span>
+                            <label id="NombreCliente" class="control-label fw-bold">-</label>
+                        </div>
+
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#myModal" onclick="">Agregar Libro</button>
+
+                    </div>
+
+                    <div class="col-md-10">
+                        
+                        <!-- Detail View -->
+                        <div id="detalleOrdenView">
+                            <!-- Solamente se muestra la primera vez como efecto visual-->
+                            @await Html.PartialAsync("_DetailOrden")
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-footer ">
+            <div class="col float-end">
+                 <input type="submit" value="Guardar Orden" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+    <br />
+
+</form>
+<div>
+    <a asp-action="Index">Regresar al listado</a>
+</div>
+
+<!-------------------------------------- Modal ----------------------------->
+<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Libros</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Etiqueta mostrar donde se inyecta el partialview-->
+                <div id="mostrar" class=""></div>
+                @await Html.PartialAsync("_AddLibro")
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!------------------------------------ Fin Modal ----------------------------->
+@section Scripts {
+    <script>
+        /**************************/
+        // Autocomplete Modal Buscar Libro
+        /**************************/
+        $("#IdLibroModal").autocomplete({
+            source: function (request, response) {
+                var id = $("#IdLibroModal").val();
+                $("#ImgLibro").attr("src", "/Images/nophoto.jpg");
+                $("#LibroSelect").html("")
+                $("#PrecioSelect").html("");
+                $("#CantidadSelect").html("");
+                $("#Precio").val("");
+                $("#Cantidad").val("");
+                $("#CantidadEnInventarioModal").val("");
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("GetLibroByName", "Libro")',
+                    dataType: "json",
+                    data: { filtro: id },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+
+                            //debugger;
+                            return { label: item.nombre, value: item.IdLibro, data: item };
+                        }));
+                    },
+                    error: function (xhr, status, error) {
+                        // xhr.requestText
+                        // debugger;
+                        console.log(error)
+                        alert("Error: " + error + ", No Error: " + xhr.status);
+                    },
+                });
+            },
+            select: function (event, ui) {
+
+                // Show data
+                console.log(ui.item)
+                $("#IdLibroModal").val(ui.item.data.idLibro)
+                $("#LibroSelect").html("Libro: " + ui.item.data.nombre)
+                $("#PrecioSelect").html("Precio: " + ui.item.data.precio)
+                $("#CantidadSelect").html("Cantidad stock: " + ui.item.data.cantidad)
+                $("#Precio").val(ui.item.data.precio)
+                $("#IdLibroModal").focus();
+
+                $("#ImgLibro").attr("src", "data:image/jpeg;charset=utf-8;base64," + ui.item.data.imagen);
+                $("#CantidadEnInventarioModal").val(ui.item.data.cantidad);
+
+                return false;
+            }
+        });
+
+        /**************************/
+        // Busca el cliente por nombre+apellido1+apellido2 //
+        /**************************/
+
+        $("#IdCliente").autocomplete({
+            source: function (request, response) {
+                var idCliente = $("#IdCliente").val();
+                console.log(idCliente);
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("GetClienteByName", "Cliente")',
+                    dataType: "json",
+                    data: { filtro: idCliente },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            console.log(item);
+                            return { label: item.nombre + " " + item.apellido1 + " " + item.apellido2, value: item.idCliente };
+                        }));
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error)
+                        alert("Error: " + error + ", No Error: " + xhr.status);
+                    },
+                });
+            },
+            select: function (event, ui) {
+
+                $("#IdCliente").val(ui.item.value);
+                $("#NombreCliente").html(ui.item.label)
+
+                return false;
+            }
+        });
+
+
+        /**************************/
+        // Limpiar cajas de texto cuando tenga el foco
+        /**************************/
+        $("#IdCliente").focus(function () {
+            // Limpia la caja de texto
+            $("#IdCliente").val("");
+            $("#NombreCliente").html("*")
+        });
+        /**************************/
+        // Agregar a la compra
+        /**************************/
+        function addLibro() {
+            let idLibroModal = document.getElementById("IdLibroModal").value;
+            let cantidadModal = document.getElementById("CantidadModal").value;
+            let precioModal = document.getElementById("Precio").value;
+            let detalleOrdenBorrar = document.getElementById("detalleOrden");
+            let divOrden = document.getElementById("detalleOrdenView");
+
+            let cantidadEnInventarioModal = document.getElementById("CantidadEnInventarioModal").value;
+
+            if ($.isNumeric(idLibroModal) == false) {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Ingrese el código del Libro!",
+                    icon: "error"
+                });
+
+                return;
+            }
+            if ($.isNumeric(cantidadModal) == false) {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Ingrese la cantidad del Libro!",
+                    icon: "error"
+                });
+
+                return;
+            }
+
+            if (parseInt(cantidadModal) <= 0) {
+                Swal.fire({
+                    title: "Error!",
+                    text: "La cantidad debe ser mayor a CERO!",
+                    icon: "error"
+                });
+                return;
+            }
+
+            if (parseInt(cantidadModal) > parseInt(cantidadEnInventarioModal)) {
+
+                Swal.fire({
+                    title: "Error!",
+                    text: "La cantidad de inventario insuficiente! ",
+                    icon: "error"
+                });
+                return;
+            }
+
+            const myRequest = '@Url.Action("AddLibro", "Orden")'
+
+            const options = {
+                method: 'GET'
+            }
+
+            fetch(myRequest + "?id=" + idLibroModal + "&cantidad=" + cantidadModal, options)
+                .then(function (response) {
+                    if (!response.ok) {
+                        return response.text().then(text => { throw new Error(text) })
+                    }
+                    return response.text();
+                })
+                .then((text) => {
+                    divOrden.innerHTML = text
+                }).catch(error => {
+                    Swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error"
+                    })
+
+                })
+
+            $("#IdLibroModal").val("")
+            $("#CantidadModal").val("")
+            $("#LibroSelect").html("")
+            $("#PrecioSelect").html("");
+            $("#CantidadSelect").html("");
+            $("#Precio").val("");
+            $("#Cantidad").val("");
+            $("#CantidadEnInventarioModal").val("");
+            $("#ImgLibro").attr("src", "/Images/nophoto.jpg");
+
+        }
+
+        /**************************/
+        // Eliminar de la compra
+        /**************************/
+        function deleteLibro(id) {
+            console.log("Borrar " + id)
+            const divOrden = document.getElementById("detalleOrdenView")
+            const myRequest = '@Url.Action("DeleteLibro", "Orden")'
+            const options = {
+                method: 'GET'
+            }
+            fetch(myRequest + "?idLibro=" + id, options)
+                .then(function (response) {
+                    if (!response.ok) {
+                        return response.text().then(text => { throw new Error(text) })
+                    }
+                    return response.text();
+                })
+                .then((text) => {
+                    divOrden.innerHTML = text
+
+                }).catch(error => {
+                    Swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error"
+                    })
+
+                })
+        }
+        //Controles de AJAX
+        function onBegin() {
+            console.log("onBegin")
+        }
+
+        function onFailure(response) {
+            console.log("onFailure")
+            Swal.fire({
+                title: "Error!",
+                text: response.responseText,
+                icon: "error"
+            });
+        }
+
+        function onSuccess(response) {
+            console.log("onSuccess")
+            document.getElementById("myForm").reset();
+            document.getElementById("NombreCliente").innerHTML = ""
+            document.getElementById("detalleOrdenView").innerHTML = ""
+
+            Swal.fire({
+                icon: "success",
+                title: "Orden salvada ...",
+                showConfirmButton: false,
+                timer: 1500
+            });
+            location.reload();
+
+        }
+
+        function onComplete() {
+            console.log("Fin del proceso")
+        }
+        function onClearForm() {
+            document.getElementById("myForm").reset();
+            document.getElementById("NombreCliente").innerHTML = ""
+            document.getElementById("detalleOrdenView").innerHTML = ""
+
+        }
+    </script>
+    <script src="~/js/orden.js" asp-append-version="true"></script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

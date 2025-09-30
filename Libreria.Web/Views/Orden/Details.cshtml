@@ -1,0 +1,80 @@
+﻿@model Libreria.Application.DTOs.OrdenDTO
+
+@{
+    ViewBag.Title = "Detalle Orden";
+}
+
+
+<div>
+    <h4>@Html.DisplayNameFor(model => model.IdOrden)  @Html.DisplayFor(model => model.IdOrden)</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaOrden)
+        </dt>
+
+        <dd>
+            @Model.FechaOrden.ToString("dd-MM-yyyy")
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IdClienteNavigation)
+        </dt>
+
+        <dd>
+            @{
+                var nombreCompleto = Model.IdClienteNavigation.Nombre + " " + Model.IdClienteNavigation.Apellido1 + " " + Model.IdClienteNavigation.Apellido2;
+            }
+            @Html.DisplayFor(model => nombreCompleto)
+        </dd>
+
+    </dl>
+    <hr />
+    <h4>Detalle Orden</h4>
+    <table class="table table-hover">
+        <tr>
+            <th>
+                Libro
+            </th>
+            <th>
+                Cantidad
+            </th>
+            <th>
+                Precio
+            </th>
+            <th>
+                Subtotal
+            </th>
+        </tr>
+
+        @foreach (var item in Model.OrdenDetalle)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdLibroNavigation.Nombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Cantidad)
+                </td>
+                <td>
+                    &cent;@Html.DisplayFor(modelItem => item.Precio)
+                </td>
+                <td>
+                    &cent;@Html.DisplayFor(modelItem => item.Subtotal)
+                </td>
+            </tr>
+        }
+        <tr>
+            <th colspan="3">
+                <span class="float-end"> @Html.DisplayNameFor(model => model.Total)</span>
+               
+            </th>
+            <th>
+                &cent; @Html.DisplayFor(model => model.Total)
+            </th>
+        </tr>
+    </table>
+</div>
+<p>
+    @Html.ActionLink("Regresar al listado", "Index")
+</p>

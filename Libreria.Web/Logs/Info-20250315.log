@@ -1,0 +1,4 @@
+2025-03-15 11:44:34.313 -06:00 [INF] Conexion correcta de admin1@prueba.com
+2025-03-15 12:16:01.824 -06:00 [INF] Error en login de ViewModelLogin { User = admin1@prueba.com, Password = 1245 }, Errores --> Error en pol?tica de largo de contrase?a
+2025-03-15 12:16:07.170 -06:00 [INF] Conexion correcta de admin1@prueba.com
+2025-03-15 16:01:48.797 -06:00 [INF] Conexion correcta de admin1@prueba.com

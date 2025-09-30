@@ -1,0 +1,28 @@
+﻿@model IEnumerable<Libreria.Application.DTOs.LibroDTO>
+@foreach (var item in Model)
+{
+    <div class="col">
+        <div class="card shadow-sm">
+            <img class="card-img-top"
+                 style="max-height:460px;"
+                 role="img"
+                 src="data:image/jpeg;charset=utf-8;base64,@Convert.ToBase64String(item.Imagen)"
+                 alt="Imagen" />
+
+            <div class="card-body">
+                <h5 class="card-title">@Html.DisplayFor(modelItem => item.Nombre)</h5>
+                <p class="card-text">@Html.DisplayFor(modelItem => item.Isbn)</p>
+                <p>@Html.DisplayFor(modelItem => item.IdAutorNavigation.Nombre)</p>
+
+                <p>@Html.DisplayFor(modelItem => item.Precio)</p>
+            </div>
+            <div class="card-body">
+                <a class="btn btn-primary" asp-action="Details"
+                   asp-route-id="@item.IdLibro"
+                   class="btn btn-info">Detalle</a>
+
+            </div>
+        </div>
+    </div>
+
+}
